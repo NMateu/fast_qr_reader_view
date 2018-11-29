@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   QRReaderController controller;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   AnimationController animationController;
+  bool _flashOn = false;
 
   @override
   void initState() {
@@ -63,6 +64,36 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         key: _scaffoldKey,
         appBar: new AppBar(
           title: const Text('Fast QR reader example'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(_flashOn ? Icons.flash_off : Icons.flash_on),
+              onPressed: () {
+                if (controller != null) {
+                  if (_flashOn) {
+                    controller.setFlashMode(CameraFlashMode.off).then((value) {
+                      if (value) {
+                        setState(() {
+                          _flashOn = false;
+                        });
+                      }
+                    }).catchError((error) {
+                      print(error);
+                    });
+                  } else {
+                    controller.setFlashMode(CameraFlashMode.on).then((value) {
+                      if (value) {
+                        setState(() {
+                          _flashOn = true;
+                        });
+                      }
+                    }).catchError((error) {
+                      print(error);
+                    });
+                  }
+                }
+              },
+            )
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           child: new Icon(Icons.check),

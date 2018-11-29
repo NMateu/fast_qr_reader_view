@@ -22,6 +22,7 @@ import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Parameters;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.util.Log;
@@ -80,6 +81,8 @@ public class CameraSource {
   private int rotation;
 
   private Size previewSize;
+
+  private String flashMode;
 
   // These values may be requested by the caller.  Due to hardware limitations, we may need to
   // select close, but not exactly the same values for these.
@@ -333,6 +336,25 @@ public class CameraSource {
     camera.addCallbackBuffer(createPreviewBuffer(previewSize));
 
     return camera;
+  }
+
+  public boolean setFlashMode(String mode) {
+    if (camera == null) {
+      return false;
+    }
+    if (mode.equals("on")) mode = Parameters.FLASH_MODE_TORCH;
+    Camera.Parameters parameters = camera.getParameters();
+    List supportedModes = parameters.getSupportedFlashModes();
+    if (supportedModes != null && supportedModes.contains(mode)) {
+      flashMode = mode;
+      parameters.setFlashMode(flashMode);
+      camera.setParameters(parameters);
+      camera.startPreview();
+      Log.d("CameraSource", "Set flash mode: " + mode);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

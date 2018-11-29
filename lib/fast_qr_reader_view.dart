@@ -10,6 +10,8 @@ enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
 
+enum CameraFlashMode { auto, on, off }
+
 enum CodeFormat {
   codabar,
   code39,
@@ -66,6 +68,18 @@ List<String> serializeCodeFormatsList(List<CodeFormat> formats) {
   }
 
   return list;
+}
+
+String serializeCameraFlashMode(CameraFlashMode mode) {
+  switch (mode) {
+    case CameraFlashMode.auto:
+      return 'auto';
+    case CameraFlashMode.on:
+      return 'on';
+    case CameraFlashMode.off:
+      return 'off';
+  }
+  throw ArgumentError('Unknown CameraFlashMode value');
 }
 
 CameraLensDirection _parseCameraLensDirection(String string) {
@@ -330,6 +344,23 @@ class QRReaderController extends ValueNotifier<QRReaderValue> {
       await _channel.invokeMethod(
         'stopScanning',
         <String, dynamic>{'textureId': _textureId},
+      );
+    } on PlatformException catch (e) {
+      throw new QRReaderException(e.code, e.message);
+    }
+  }
+  
+  Future<bool> setFlashMode(CameraFlashMode mode) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw new QRReaderException(
+        'Uninitialized QRReaderController',
+        'setFlashMode was called on uninitialized QRReaderController',
+      );
+    }
+    try {
+      return await _channel.invokeMethod(
+          'setFlashMode',
+          <String, dynamic>{'cameraMode': serializeCameraFlashMode(mode)},
       );
     } on PlatformException catch (e) {
       throw new QRReaderException(e.code, e.message);

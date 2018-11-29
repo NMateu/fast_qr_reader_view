@@ -8,10 +8,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.os.Bundle;
@@ -218,6 +221,14 @@ public class FastQrReaderViewPlugin implements MethodCallHandler {
                 break;
             case "stopScanning":
                 stopScanning(result);
+                break;
+            case "setFlashMode":
+                if (camera == null) {
+                    result.error("Camera not initialized", null, null);
+                } else {
+                    String cameraMode = call.argument("cameraMode");
+                    result.success(camera.setFlashMode(cameraMode));
+                }
                 break;
             case "dispose": {
                 if (camera != null) {
@@ -489,6 +500,11 @@ public class FastQrReaderViewPlugin implements MethodCallHandler {
             } catch (IllegalArgumentException e) {
                 result.error("IllegalArgumentException", e.getMessage(), null);
             }
+        }
+
+        public boolean setFlashMode(String mode) {
+            if (cameraSource == null) return false;
+            return cameraSource.setFlashMode(mode);
         }
 
         //
