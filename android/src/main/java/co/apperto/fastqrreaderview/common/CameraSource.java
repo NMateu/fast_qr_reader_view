@@ -350,7 +350,6 @@ public class CameraSource {
       parameters.setFlashMode(flashMode);
       camera.setParameters(parameters);
       camera.startPreview();
-      Log.d("CameraSource", "Set flash mode: " + mode);
       return true;
     } else {
       return false;
