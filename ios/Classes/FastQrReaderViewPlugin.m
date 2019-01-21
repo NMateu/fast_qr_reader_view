@@ -371,9 +371,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         photosettings.flashMode = AVCaptureFlashModeOff;
                     }
                     [device unlockForConfiguration];
+                    result(@YES);
                 }
             }
-            result(nil);
+            result(@NO);
         } else {
             result(nil);
         }
