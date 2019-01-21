@@ -344,7 +344,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             AVCaptureFlashMode *flashMode;
             if ([@"auto" isEqualToString:cameraMode]) {
                 flashMode = AVCaptureFlashModeAuto;
-            } else if (@"on" isEqualToString:cameraMode]) {
+            } else if ([@"on" isEqualToString:cameraMode]) {
                 flashMode = AVCaptureFlashModeOn;
             } else {
                 flashMode = AVCaptureFlashModeOff;
@@ -375,8 +375,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     [device unlockForConfiguration];
                 }
             }
+            result(true);
         } else {
-            result([error @"Camera not initialized"]);
+            result(nil);
         }
     } else {
         NSDictionary *argsMap = call.arguments;
