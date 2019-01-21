@@ -375,7 +375,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     [device unlockForConfiguration];
                 }
             }
-            result(true);
+            result(nil);
         } else {
             result(nil);
         }
