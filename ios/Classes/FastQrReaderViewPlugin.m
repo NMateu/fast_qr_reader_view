@@ -366,11 +366,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     if (on) {
                         [device setTorchMode:AVCaptureTorchModeOn];
                         photosettings.flashMode = AVCaptureFlashModeOn;
-                        //torchIsOn = YES; //define as a variable/property if you need to know status
                     } else {
                         [device setTorchMode:AVCaptureTorchModeOff];
-                        photosettings.flashMode = AVCaptureFlashModeOn;
-                        //torchIsOn = NO;
+                        photosettings.flashMode = AVCaptureFlashModeOff;
                     }
                     [device unlockForConfiguration];
                 }
