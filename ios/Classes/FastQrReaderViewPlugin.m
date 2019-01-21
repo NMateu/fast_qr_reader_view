@@ -349,19 +349,30 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             } else {
                 flashMode = AVCaptureFlashModeOff;
             }
-            if ( _captureDevice.hasFlash && [_captureDevice isFlashModeSupported:flashMode] ) {
-                NSError *error = nil;
-                if ( [_captureDevice lockForConfiguration:&error] ) {
-                    _captureDevice.flashMode = flashMode;
-                    [_captureDevice unlockForConfiguration];
-                }
-                else {
-                    NSLog( @"Could not lock device for configuration: %@", error );
-                }
-                if (error) {
-                    result(false);
-                } else {
-                    result(true);
+            BOOL on;
+            if (flashMode == AVCaptureFlashModeOn) {
+                on = true;
+            }
+            else {
+                on = false ;
+            }
+            Class captureDeviceClass = NSClassFromString(@"AVCaptureDevice");
+            if (captureDeviceClass != nil) {
+                AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+                AVCapturePhotoSettings *photosettings = [AVCapturePhotoSettings photoSettings];
+                if ([device hasTorch] && [device hasFlash]){
+
+                    [device lockForConfiguration:nil];
+                    if (on) {
+                        [device setTorchMode:AVCaptureTorchModeOn];
+                        photosettings.flashMode = AVCaptureFlashModeOn;
+                        //torchIsOn = YES; //define as a variable/property if you need to know status
+                    } else {
+                        [device setTorchMode:AVCaptureTorchModeOff];
+                        photosettings.flashMode = AVCaptureFlashModeOn;
+                        //torchIsOn = NO;
+                    }
+                    [device unlockForConfiguration];
                 }
             }
         } else {
