@@ -338,6 +338,35 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                      });
             [cam start];
         }
+    } else if ([@"setFlashMode" isEqualToString:call.method]) { 
+        if (_camera) {
+            NSString *cameraMode = call.arguments[@"cameraMode"];
+            AVCaptureFlashMode *flashMode;
+            if ([@"auto" isEqualToString:cameraMode]) {
+                flashMode = AVCaptureFlashModeAuto;
+            } else if (@"on" isEqualToString:cameraMode]) {
+                flashMode = AVCaptureFlashModeOn;
+            } else {
+                flashMode = AVCaptureFlashModeOff;
+            }
+            if ( _captureDevice.hasFlash && [_captureDevice isFlashModeSupported:flashMode] ) {
+                NSError *error = nil;
+                if ( [_captureDevice lockForConfiguration:&error] ) {
+                    _captureDevice.flashMode = flashMode;
+                    [_captureDevice unlockForConfiguration];
+                }
+                else {
+                    NSLog( @"Could not lock device for configuration: %@", error );
+                }
+                if (error) {
+                    result(false);
+                } else {
+                    result(true);
+                }
+            }
+        } else {
+            result([error @"Camera not initialized"]);
+        }
     } else {
         NSDictionary *argsMap = call.arguments;
         NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
