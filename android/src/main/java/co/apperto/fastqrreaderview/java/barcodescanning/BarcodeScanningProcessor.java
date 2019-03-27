@@ -13,9 +13,9 @@
 // limitations under the License.
 package co.apperto.fastqrreaderview.java.barcodescanning;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
