@@ -338,6 +338,46 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                      });
             [cam start];
         }
+    } else if ([@"setFlashMode" isEqualToString:call.method]) { 
+        if (_camera) {
+            NSString *cameraMode = call.arguments[@"cameraMode"];
+            AVCaptureFlashMode *flashMode;
+            if ([@"auto" isEqualToString:cameraMode]) {
+                flashMode = AVCaptureFlashModeAuto;
+            } else if ([@"on" isEqualToString:cameraMode]) {
+                flashMode = AVCaptureFlashModeOn;
+            } else {
+                flashMode = AVCaptureFlashModeOff;
+            }
+            BOOL on;
+            if (flashMode == AVCaptureFlashModeOn) {
+                on = true;
+            }
+            else {
+                on = false ;
+            }
+            Class captureDeviceClass = NSClassFromString(@"AVCaptureDevice");
+            if (captureDeviceClass != nil) {
+                AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+                AVCapturePhotoSettings *photosettings = [AVCapturePhotoSettings photoSettings];
+                if ([device hasTorch] && [device hasFlash]){
+
+                    [device lockForConfiguration:nil];
+                    if (on) {
+                        [device setTorchMode:AVCaptureTorchModeOn];
+                        photosettings.flashMode = AVCaptureFlashModeOn;
+                    } else {
+                        [device setTorchMode:AVCaptureTorchModeOff];
+                        photosettings.flashMode = AVCaptureFlashModeOff;
+                    }
+                    [device unlockForConfiguration];
+                    result(@YES);
+                }
+            }
+            result(@NO);
+        } else {
+            result(nil);
+        }
     } else {
         NSDictionary *argsMap = call.arguments;
         NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
